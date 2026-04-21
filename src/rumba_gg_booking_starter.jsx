@@ -13,18 +13,27 @@ const services = [
     duration: 60,
     image:
       "https://images.unsplash.com/photo-1518611012118-696072aa579a?q=80&w=1200&auto=format&fit=crop",
+    times: ["5:00 AM"],
+    badge: "Heated Pilates",
   },
   {
-  id: "zumba",
-  name: "Zumba",
-  duration: 60,
-  price: ,
-}
+    id: "zumba",
+    name: "Zumba",
+    provider: "Rumba G & G",
+    description:
+      "Bring the energy with this fun, full-body dance fitness class. Zumba blends upbeat music with easy-to-follow movements to help you burn calories, boost endurance, and leave feeling strong, sweaty, and empowered.",
+    price: 20,
+    duration: 60,
+    image:
+      "https://images.unsplash.com/photo-1518611012118-36d4f2c7d3e9?q=80&w=1200&auto=format&fit=crop",
+    times: ["9:00 AM", "6:00 PM"],
+    badge: "Dance Fitness",
+  },
 ];
 
 const MAX_CLASS_SIZE = 20;
 
-const generateAvailableDates = () =>
+const generateAvailableDates = (service = services[0]) =>
   Array.from({ length: 14 }, (_, i) => {
     const date = new Date();
     date.setHours(0, 0, 0, 0);
@@ -36,7 +45,7 @@ const generateAvailableDates = () =>
         day: "numeric",
         year: "numeric",
       }),
-      times: ["5:00 AM"],
+      times: service?.times || ["5:00 AM"],
       booked: 0,
     };
   });
@@ -87,10 +96,10 @@ function Step({ active, complete, icon: Icon, label }) {
 
 export default function RumbaGGStarter() {
   const [section, setSection] = useState("home");
-  const [availableDates, setAvailableDates] = useState(generateAvailableDates);
-  const [selectedService, setSelectedService] = useState(null);
-  const [selectedDate, setSelectedDate] = useState(generateAvailableDates()[0].day);
-  const [selectedTime, setSelectedTime] = useState(generateAvailableDates()[0].times[0]);
+  const [selectedService, setSelectedService] = useState(services[0]);
+  const [availableDates, setAvailableDates] = useState(() => generateAvailableDates(services[0]));
+  const [selectedDate, setSelectedDate] = useState(() => generateAvailableDates(services[0])[0].day);
+  const [selectedTime, setSelectedTime] = useState(() => generateAvailableDates(services[0])[0].times[0]);
   const [waiverAcknowledged, setWaiverAcknowledged] = useState(false);
   const [details, setDetails] = useState({
     firstName: "",
@@ -105,16 +114,18 @@ export default function RumbaGGStarter() {
   const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
-    const freshDates = generateAvailableDates();
+    const freshDates = generateAvailableDates(selectedService || services[0]);
     const savedBookings = JSON.parse(localStorage.getItem("rumbagg-bookings") || "{}");
 
     const mergedDates = freshDates.map((date) => ({
       ...date,
-      booked: Math.min(savedBookings[date.day] || 0, MAX_CLASS_SIZE),
+      booked: Math.min(savedBookings[`${selectedService?.id || services[0].id}-${date.day}`] || 0, MAX_CLASS_SIZE),
     }));
 
     setAvailableDates(mergedDates);
-  }, []);
+    setSelectedDate(mergedDates[0]?.day || "");
+    setSelectedTime(mergedDates[0]?.times?.[0] || "");
+  }, [selectedService]);
 
   const dateOptions = useMemo(() => availableDates.find((d) => d.day === selectedDate), [selectedDate, availableDates]);
 
@@ -157,7 +168,7 @@ export default function RumbaGGStarter() {
   const submitBooking = (e) => {
     e.preventDefault();
 
-    if (!selectedDate || spotsRemaining <= 0) {
+    if (!selectedDate || spotsRemaining <= 0 || !selectedService) {
       return;
     }
 
@@ -169,12 +180,13 @@ export default function RumbaGGStarter() {
 
     setAvailableDates(updatedDates);
 
-    const bookingCounts = updatedDates.reduce((acc, date) => {
-      acc[date.day] = date.booked || 0;
-      return acc;
-    }, {});
+    const savedBookings = JSON.parse(localStorage.getItem("rumbagg-bookings") || "{}");
 
-    localStorage.setItem("rumbagg-bookings", JSON.stringify(bookingCounts));
+    updatedDates.forEach((date) => {
+      savedBookings[`${selectedService.id}-${date.day}`] = date.booked || 0;
+    });
+
+    localStorage.setItem("rumbagg-bookings", JSON.stringify(savedBookings));
     setSubmitted(true);
     setSection("success");
   };
@@ -233,7 +245,7 @@ export default function RumbaGGStarter() {
                 transition={{ delay: 0.14 }}
                 className="mt-6 max-w-2xl text-lg text-white/75"
               >
-                Rumba G &amp; G offers daily classes designed to energize your body, build confidence, and help you stay consistent.
+                Rumba G &amp; G offers daily fitness classes designed to energize your body, build confidence, and help you stay consistent.
               </motion.p>
               <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="mt-8 flex flex-wrap gap-4">
                 <GradientButton onClick={startBooking}>Book Now</GradientButton>
@@ -250,7 +262,7 @@ export default function RumbaGGStarter() {
             <GlassCard className="p-8 md:p-12">
               <h2 className="text-4xl font-light">About Rumba G &amp; G</h2>
               <p className="mt-5 text-lg leading-8 text-white/75">
-                Rumba G &amp; G is a health and wellness fitness brand offering a daily 1-hour class called <span className="text-white">Hot Girl Summer</span> from <span className="text-white">5:00 AM to 6:00 AM</span>. This starter gives you a polished luxury-style website with a waiver step, service selection, booking flow, payment section, and intake form all in one place.
+                Rumba G &amp; G is a health and wellness fitness brand offering daily classes including <span className="text-white">Hot Girl Summer</span> and <span className="text-white">Zumba</span>. Book your spot, complete your waiver, and join a fun, energetic class experience.
               </p>
             </GlassCard>
           </section>
@@ -285,20 +297,19 @@ export default function RumbaGGStarter() {
               <GlassCard className="overflow-hidden">
                 <div className="border-b border-white/10 px-6 py-5">
                   <h2 className="text-3xl font-light">Rumba G &amp; G Liability Waiver</h2>
-                  <p className="mt-2 text-white/70">Use your uploaded waiver as the content for a Google Form. Once the Google Form is created, paste the embed link into <code className="rounded bg-slate-900/70 px-2 py-1 text-xs">googleFormEmbedUrl</code> above.</p>
                 </div>
                 <div className="bg-white p-2 md:p-4">
                   <iframe
                     title="Google Form Waiver"
                     src={googleFormEmbedUrl}
-                    className="h-[900px] w-full rounded-2xl"
+                    className="h-[1100px] w-full rounded-2xl"
                   />
                 </div>
               </GlassCard>
               <GlassCard className="h-fit p-6">
-                  <label className="mt-6 flex items-start gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-white/75">
+                <label className="mt-2 flex items-start gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-white/75">
                   <input type="checkbox" checked={waiverAcknowledged} onChange={(e) => setWaiverAcknowledged(e.target.checked)} className="mt-1" />
-                  I completed the waiver and want to continue to booking.
+                  I completed the waiver and agree to continue
                 </label>
                 <GradientButton onClick={continueAfterWaiver} disabled={!waiverAcknowledged} className="mt-5 w-full">
                   Continue to Booking
@@ -324,10 +335,10 @@ export default function RumbaGGStarter() {
                   <img src={service.image} alt={service.name} className="h-full min-h-[220px] w-full object-cover" />
                   <div className="flex flex-col justify-between p-6 md:p-8">
                     <div>
-                      <div className="text-xs uppercase tracking-[0.25em] text-white/55">Signature Class</div>
+                      <div className="text-xs uppercase tracking-[0.25em] text-white/55">{service.badge}</div>
                       <h3 className="mt-3 text-3xl font-light">{service.name}</h3>
                       <p className="mt-2 text-sm uppercase tracking-[0.2em] text-white/50">{service.provider}</p>
-                      <p className="mt-3 text-sm uppercase tracking-[0.2em] text-amber-200">Daily • 5:00 AM to 6:00 AM</p>
+                      <p className="mt-3 text-sm uppercase tracking-[0.2em] text-amber-200">Daily • {service.times.join(" • ")}</p>
                       <p className="mt-5 max-w-3xl text-lg leading-8 text-white/75">{service.description}</p>
                     </div>
                     <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
@@ -395,7 +406,7 @@ export default function RumbaGGStarter() {
                             onClick={() => setSelectedTime(time)}
                             className={`rounded-2xl border px-4 py-4 text-left ${selectedTime === time ? "border-amber-300 bg-amber-300 text-slate-950" : "border-white/10 bg-white/5"}`}
                           >
-                            {time} - 6:00 AM
+                            {time}
                             <div className="mt-1 text-sm opacity-70">{spotsRemaining} of {MAX_CLASS_SIZE} spots left</div>
                           </button>
                         ))
@@ -416,7 +427,7 @@ export default function RumbaGGStarter() {
               <GlassCard className="h-fit p-6">
                 <div className="text-xs uppercase tracking-[0.3em] text-white/50">Details</div>
                 <div className="mt-4 text-xl">{selectedService.name}</div>
-                <div className="mt-2 text-white/65">Daily from 5:00 AM to 6:00 AM</div>
+                <div className="mt-2 text-white/65">Available times: {selectedService.times.join(" • ")}</div>
                 <div className="mt-6 text-white/70">{selectedDate} • {selectedTime || "Choose a time"}</div>
                 <div className="mt-2 text-sm text-white/60">{spotsRemaining} of {MAX_CLASS_SIZE} spots remaining</div>
                 <div className="mt-6 text-2xl">${selectedService.price}</div>
@@ -484,7 +495,7 @@ export default function RumbaGGStarter() {
                 <div className="text-xs uppercase tracking-[0.3em] text-white/50">Summary</div>
                 <div className="mt-4 text-xl">{selectedService.name}</div>
                 <div className="mt-2 text-white/70">{bookingSummary?.when}</div>
-                <div className="mt-2 text-white/70">Daily class • 5:00 AM to 6:00 AM</div>
+                <div className="mt-2 text-white/70">{selectedService.badge} • {selectedService.times.join(" • ")}</div>
                 <div className="mt-2 text-sm text-white/60">{spotsRemaining} of {MAX_CLASS_SIZE} spots remaining</div>
                 <div className="mt-4 text-sm text-white/60">Payment method: {paymentMethods.find((m) => m.id === details.paymentMethod)?.name}</div>
                 <div className="mt-6 text-xs uppercase tracking-[0.3em] text-white/50">Total Price</div>
