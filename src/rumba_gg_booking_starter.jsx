@@ -290,14 +290,7 @@ export default function RumbaGGStarter() {
                 </div>
               </GlassCard>
               <GlassCard className="h-fit p-6">
-                <h3 className="text-xl">Before they continue</h3>
-                <ul className="mt-4 space-y-3 text-sm text-white/70">
-                  <li>• Create a Google Form titled <span className="text-white">Rumba G &amp; G Liability Waiver and Release Form</span>.</li>
-                  <li>• Add fields from your uploaded waiver: full name, date of birth, phone, email, emergency contact, photo/video release, signature, and date.</li>
-                  <li>• Add each waiver section as a paragraph and require a final acknowledgment checkbox before submission.</li>
-                  <li>• After you click <span className="text-white">Send → &lt;&gt; Embed</span> in Google Forms, paste the embed URL into this file.</li>
-                </ul>
-                <label className="mt-6 flex items-start gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-white/75">
+                  <label className="mt-6 flex items-start gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-white/75">
                   <input type="checkbox" checked={waiverAcknowledged} onChange={(e) => setWaiverAcknowledged(e.target.checked)} className="mt-1" />
                   I completed the waiver and want to continue to booking.
                 </label>
