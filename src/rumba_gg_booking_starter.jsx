@@ -14,6 +14,12 @@ const services = [
     image:
       "https://images.unsplash.com/photo-1518611012118-696072aa579a?q=80&w=1200&auto=format&fit=crop",
   },
+  {
+  id: "zumba",
+  name: "Zumba",
+  duration: 60,
+  price: ,
+}
 ];
 
 const MAX_CLASS_SIZE = 20;
@@ -227,7 +233,7 @@ export default function RumbaGGStarter() {
                 transition={{ delay: 0.14 }}
                 className="mt-6 max-w-2xl text-lg text-white/75"
               >
-                Rumba G &amp; G offers one daily class designed to energize your body, build confidence, and help you stay consistent.
+                Rumba G &amp; G offers daily classes designed to energize your body, build confidence, and help you stay consistent.
               </motion.p>
               <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="mt-8 flex flex-wrap gap-4">
                 <GradientButton onClick={startBooking}>Book Now</GradientButton>
