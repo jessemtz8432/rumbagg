@@ -8,7 +8,7 @@ const services = [
     name: "Hot Girl Summer",
     provider: "Rumba G & G",
     description:
-      "Start your day strong and focused with our daily 1-hour morning class. Hot Girl Summer is designed to energize your body, build confidence, and help you stay consistent.",
+      "Turn up the heat with this high-energy Pilates session. Our heated environment helps loosen muscles, enhance calorie burn, and push your limits while building core strength and total-body tone.",
     price: 20,
     duration: 60,
     image:
