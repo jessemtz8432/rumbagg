@@ -25,7 +25,7 @@ const services = [
     price: 20,
     duration: 60,
     image:
-      "https://images.unsplash.com/photo-1552674605-db6ffd4facb5?q=80&w=1200&auto=format&fit=crop",
+      "/images/zumba.jpg",
     times: ["9:00 AM", "6:00 PM"],
     badge: "Dance Fitness",
   },
