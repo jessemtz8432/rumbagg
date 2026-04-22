@@ -262,8 +262,8 @@ export default function RumbaGGStarter() {
             <GlassCard className="p-8 md:p-12">
               <h2 className="text-4xl font-light">About Rumba G &amp; G</h2>
               <p className="mt-5 text-lg leading-8 text-white/75">
-                Rumba G &amp; G is a health and wellness fitness brand offering daily classes including <span className="text-white">Hot Girl Summer</span> and <span className="text-white">Zumba</span>. Book your spot, complete your waiver, and join a fun, energetic class experience.
-              </p>
+  Rumba G &amp; G brings together strength, rhythm, and energy through daily classes like <span className="text-white">Hot Girl Summer Pilates</span> and <span className="text-white">Zumba</span>. Whether you're here to sweat, tone, or dance it out, every session is designed to leave you feeling stronger, more confident, and ready for more. Book your spot, complete your waiver, and join the movement.
+</p>
             </GlassCard>
           </section>
         )}
